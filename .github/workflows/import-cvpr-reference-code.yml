@@ -1,0 +1,80 @@
+name: Import deduplicated CVPR 2023 reference source code
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-cvpr-reference-code.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cvpr-2023-source-import
+  cancel-in-progress: false
+jobs:
+  copy-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out aggregation repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Clone and commit licensed upstream snapshots
+        shell: bash
+        env:
+          GIT_LFS_SKIP_SMUDGE: "1"
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+          mkdir -p import-reports
+          report="import-reports/latest-import.md"
+          printf '# CVPR 2023 reference source import report\n\n' > "$report"
+          printf 'Source repositories are copied as shallow snapshots without executing upstream code.\n\n' >> "$report"
+          failures=0
+          while IFS='|' read -r folder url; do
+            [ -n "$folder" ] || continue
+            temp="$(mktemp -d)"
+            echo "Importing $folder from $url"
+            if git clone --depth 1 --single-branch --quiet "$url" "$temp/repo"; then
+              rm -rf "$temp/repo/.git"
+              mkdir -p "$folder"
+              cp -a "$temp/repo/." "$folder/"
+              printf -- '- **%s**: imported from %s\n' "$folder" "$url" >> "$report"
+            else
+              printf -- '- **%s**: CLONE FAILED, see workflow logs (%s)\n' "$folder" "$url" >> "$report"
+              failures=$((failures + 1))
+            fi
+            rm -rf "$temp"
+          done <<'REPOSITORIES'
+          slim-neck-by-gsconv|https://github.com/alanli1997/slim-neck-by-gsconv.git
+          attention-module|https://github.com/Jongchan/attention-module.git
+          DroneDetectron2|https://github.com/akhilpm/DroneDetectron2.git
+          ECANet|https://github.com/BangguWu/ECANet.git
+          MobileViG|https://github.com/SLDGroup/MobileViG.git
+          CFDP|https://github.com/Skhaki18/CFDP.git
+          ultralytics|https://github.com/ultralytics/ultralytics.git
+          mmsegmentation|https://github.com/open-mmlab/mmsegmentation.git
+          RegSeg|https://github.com/RolandGao/RegSeg.git
+          WS-DefSegNet|https://github.com/ic-qialanqian/WS-DefSegNet.git
+          compensation_learning|https://github.com/tnt-LUH/compensation_learning.git
+          cad|https://github.com/visinf/cad.git
+          REPOSITORIES
+          find slim-neck-by-gsconv attention-module DroneDetectron2 ECANet MobileViG CFDP ultralytics mmsegmentation RegSeg WS-DefSegNet compensation_learning cad -type f -size +95M -print | while IFS= read -r f; do
+            printf -- '- **Omitted oversized file (>95 MiB)**: %s\n' "$f" >> "$report"
+            rm -f "$f"
+          done
+          printf '\n[**AICITY_2023_Track5**](https://github.com/NYCU-AICVLab/AICITY_2023_Track5): link only (repository-level license not found); no source files copied.\n' >> "$report"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- slim-neck-by-gsconv attention-module DroneDetectron2 ECANet MobileViG CFDP ultralytics mmsegmentation RegSeg WS-DefSegNet compensation_learning cad import-reports
+          if git diff --cached --quiet; then
+            echo "No import changes"
+          else
+            git commit -m "Import 12 deduplicated licensed upstream code snapshots"
+            git push origin HEAD:main
+          fi
+          if [ "$failures" -gt 0 ]; then
+            echo "$failures repositories failed to clone; see import-reports/latest-import.md"
+            exit 1
+          fi
