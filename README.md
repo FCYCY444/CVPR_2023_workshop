@@ -6,23 +6,26 @@
 
 > 此处按原仓库名集中保存多个项目的代码快照，不是 GitHub 官方意义的 Fork；不包含上游原始 Git 提交历史。
 
+
+**导入结果：** 12 个项目的源码已完成复制并逐个检查 README；1 个许可证未明确的项目只保存来源链接。查看 [GitHub Actions 成功运行记录](https://github.com/FCYCY444/CVPR_2023_workshop/actions/runs/44554017273)和[导入日志](./import-reports/latest-import.md)。
+
 ## 项目索引
 
 | 目录 | 研究方法 | 方向 | 原始 GitHub 仓库 | 许可证 | 保存方式 |
 | --- | --- | --- | --- | --- | --- |
-| [slim-neck-by-gsconv](./slim-neck-by-gsconv/) | GSConv 轻量 Neck | 冠层图 | [alanli1997/slim-neck-by-gsconv](https://github.com/alanli1997/slim-neck-by-gsconv) | GPL-3.0 | 公开源码快照（导入中） |
-| [attention-module](./attention-module/) | CBAM 浅层注意力 | 冠层图 | [Jongchan/attention-module](https://github.com/Jongchan/attention-module) | MIT | 公开源码快照（导入中） |
-| [DroneDetectron2](./DroneDetectron2/) | Cascaded Zoom-in | 冠层图 | [akhilpm/DroneDetectron2](https://github.com/akhilpm/DroneDetectron2) | MIT | 公开源码快照（导入中） |
-| [ECANet](./ECANet/) | ECA 通道注意力 | 冠层图 | [BangguWu/ECANet](https://github.com/BangguWu/ECANet) | MIT | 公开源码快照（导入中） |
-| [MobileViG](./MobileViG/) | MobileViG | 冠层图；叶面斑块 | [SLDGroup/MobileViG](https://github.com/SLDGroup/MobileViG) | Apache-2.0 | 公开源码快照（导入中） |
-| [CFDP](./CFDP/) | CFDP 通道剪枝 | 冠层图 | [Skhaki18/CFDP](https://github.com/Skhaki18/CFDP) | MIT | 公开源码快照（导入中） |
-| [ultralytics](./ultralytics/) | SBAD 的 YOLO 框架 | 冠层图 | [ultralytics/ultralytics](https://github.com/ultralytics/ultralytics) | AGPL-3.0 | 公开源码快照（导入中） |
+| [slim-neck-by-gsconv](./slim-neck-by-gsconv/) | GSConv 轻量 Neck | 冠层图 | [alanli1997/slim-neck-by-gsconv](https://github.com/alanli1997/slim-neck-by-gsconv) | GPL-3.0 | 已复制源码 |
+| [attention-module](./attention-module/) | CBAM 浅层注意力 | 冠层图 | [Jongchan/attention-module](https://github.com/Jongchan/attention-module) | MIT | 已复制源码 |
+| [DroneDetectron2](./DroneDetectron2/) | Cascaded Zoom-in | 冠层图 | [akhilpm/DroneDetectron2](https://github.com/akhilpm/DroneDetectron2) | MIT | 已复制源码 |
+| [ECANet](./ECANet/) | ECA 通道注意力 | 冠层图 | [BangguWu/ECANet](https://github.com/BangguWu/ECANet) | MIT | 已复制源码 |
+| [MobileViG](./MobileViG/) | MobileViG | 冠层图；叶面斑块 | [SLDGroup/MobileViG](https://github.com/SLDGroup/MobileViG) | Apache-2.0 | 已复制源码 |
+| [CFDP](./CFDP/) | CFDP 通道剪枝 | 冠层图 | [Skhaki18/CFDP](https://github.com/Skhaki18/CFDP) | MIT | 已复制源码 |
+| [ultralytics](./ultralytics/) | SBAD 的 YOLO 框架 | 冠层图 | [ultralytics/ultralytics](https://github.com/ultralytics/ultralytics) | AGPL-3.0 | 已复制源码 |
 | [AICITY_2023_Track5](./AICITY_2023_Track5/) | PRB-FPN | 冠层图 | [NYCU-AICVLab/AICITY_2023_Track5](https://github.com/NYCU-AICVLab/AICITY_2023_Track5) | 未发现仓库级许可证 | 仅原始链接 |
-| [mmsegmentation](./mmsegmentation/) | MTLSegFormer 的 SegFormer 基础框架 | 叶面斑块 | [open-mmlab/mmsegmentation](https://github.com/open-mmlab/mmsegmentation) | Apache-2.0 | 公开源码快照（导入中） |
-| [RegSeg](./RegSeg/) | RegSeg | 叶面斑块 | [RolandGao/RegSeg](https://github.com/RolandGao/RegSeg) | MIT | 公开源码快照（导入中） |
-| [WS-DefSegNet](./WS-DefSegNet/) | WS-DefSegNet | 叶面斑块 | [ic-qialanqian/WS-DefSegNet](https://github.com/ic-qialanqian/WS-DefSegNet) | MIT | 公开源码快照（导入中） |
-| [compensation_learning](./compensation_learning/) | Compensation Learning | 叶面斑块 | [tnt-LUH/compensation_learning](https://github.com/tnt-LUH/compensation_learning) | Apache-2.0 | 公开源码快照（导入中） |
-| [cad](./cad/) | Content-Adaptive Downsampling | 叶面斑块 | [visinf/cad](https://github.com/visinf/cad) | Apache-2.0 | 公开源码快照（导入中） |
+| [mmsegmentation](./mmsegmentation/) | MTLSegFormer 的 SegFormer 基础框架 | 叶面斑块 | [open-mmlab/mmsegmentation](https://github.com/open-mmlab/mmsegmentation) | Apache-2.0 | 已复制源码 |
+| [RegSeg](./RegSeg/) | RegSeg | 叶面斑块 | [RolandGao/RegSeg](https://github.com/RolandGao/RegSeg) | MIT | 已复制源码 |
+| [WS-DefSegNet](./WS-DefSegNet/) | WS-DefSegNet | 叶面斑块 | [ic-qialanqian/WS-DefSegNet](https://github.com/ic-qialanqian/WS-DefSegNet) | MIT | 已复制源码 |
+| [compensation_learning](./compensation_learning/) | Compensation Learning | 叶面斑块 | [tnt-LUH/compensation_learning](https://github.com/tnt-LUH/compensation_learning) | Apache-2.0 | 已复制源码 |
+| [cad](./cad/) | Content-Adaptive Downsampling | 叶面斑块 | [visinf/cad](https://github.com/visinf/cad) | Apache-2.0 | 已复制源码 |
 
 ## 说明
 
