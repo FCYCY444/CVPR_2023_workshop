@@ -1,0 +1,98 @@
+name: Import new CVPR 2023 workshop reference source snapshots
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/import-workshop-additions.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: cvpr-2023-workshop-additions
+  cancel-in-progress: false
+jobs:
+  import-additions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Check out aggregate repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Copy only new licensed upstream snapshots without running upstream code
+        shell: bash
+        env:
+          GIT_TERMINAL_PROMPT: "0"
+          GIT_LFS_SKIP_SMUDGE: "1"
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p import-reports
+          report="import-reports/workshop-additions-20261125.md"
+          printf '# CVPR 2023 workshop 新增项目源码导入报告\n\n' > "$report"
+          printf '本次仅处理两份新上传的清单中尚未在仓库保存的项目。不执行上游代码，也不重新复制原有 13 个项目。\n\n' >> "$report"
+          failures=0
+          imported=0
+          while IFS='|' read -r folder url mode; do
+            [ -n "$folder" ] || continue
+            echo "::group::Import $folder"
+            temp="$(mktemp -d)"
+            if git -c core.hooksPath=/dev/null clone --quiet --depth 1 --single-branch --filter=blob:none "$url" "$temp/upstream"; then
+              rm -rf "$temp/upstream/.git"
+              if [ "$mode" = "code-only" ]; then
+                mkdir -p "$folder"
+                cp -a "$temp/upstream/Code" "$folder/"
+                cp "$temp/upstream/LICENSE" "$temp/upstream/README.md" "$folder/"
+                printf -- '- **%s**：已复制 Code/、README.md、LICENSE，未复制 Dataset/ 或网站素材；%s\n' "$folder" "$url" >> "$report"
+              else
+                mkdir -p "$folder"
+                cp -a "$temp/upstream/." "$folder/"
+                if [ "$mode" = "gpl-readme" ]; then
+                  cp "slim-neck-by-gsconv/LICENSE" "$folder/LICENSE"
+                  cat > "$folder/REDISTRIBUTION_LICENSE_NOTE.md" <<'LICENSE_NOTE'
+          The original PerfPredRecV2 repository states in README.md that the
+          code is licensed under GNU GPL v3.0, but the original repository
+          does not contain a standalone LICENSE file. The file LICENSE in
+          this snapshot is a copy of the standard GPLv3 text from the
+          existing slim-neck-by-gsconv reference in this collection, added
+          to accompany redistribution. It was not in the original upstream.
+          LICENSE_NOTE
+                fi
+                if [ "$folder" = "EVFR" ]; then
+                  cat > "$folder/REDISTRIBUTION_LICENSE_NOTE.md" <<'LICENSE_NOTE'
+          The upstream EVFR README states that the project uses the MIT
+          License. Its original LICENSE file contains an ellipsis instead
+          of a complete license grant. The file is preserved unchanged.
+          Confirm its licensing text with the upstream author before
+          relying on it for use or redistribution beyond this collection.
+          LICENSE_NOTE
+                fi
+                printf -- '- **%s**：已复制上游默认分支的公开源码快照；%s\n' "$folder" "$url" >> "$report"
+              fi
+              find "$folder" -type f -size +95M -print | while IFS= read -r file; do
+                printf -- '- **超过 95 MiB，省略**：%s\n' "$file" >> "$report"
+                rm -f "$file"
+              done
+              imported=$((imported + 1))
+            else
+              printf -- '- **导入失败**：%s；%s\n' "$folder" "$url" >> "$report"
+              failures=$((failures + 1))
+            fi
+            rm -rf "$temp"
+            echo "::endgroup::"
+          done < .github/workshop-additions-import.tsv
+          printf '\n以下新增项目因许可证尚未核实，只保存 SOURCE.md 来源索引：Synthetic-Mushroom-Dataset、L-CRP、Oneshot-Part-CellSegmentation、rip_currents、CONFETI。\n' >> "$report"
+          printf '\nWEDGE 数据集许可证为 CC BY-NC-SA 4.0，此次只复制代码；flight-net 受 CC BY-NC-SA 4.0 许可限制。\n' >> "$report"
+          git add -- LocalizationLabelNoise EVFR WEDGE RepRFN flight-net zutis namedmask Open-set-M2F PerfPredRecV2 "$report"
+          if git diff --cached --quiet; then
+            echo "No files changed"
+          else
+            git commit -m "Import nine new licensed CVPR 2023 workshop source snapshots"
+            git push origin HEAD:main
+          fi
+          echo "Imported $imported new project snapshots. Failures: $failures"
+          if [ "$failures" -gt 0 ]; then
+            exit 1
+          fi
